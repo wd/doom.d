@@ -49,13 +49,10 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-
-(package! color-theme-sanityinc-tomorrow)
-(package! cnfonts)
-(package! whitespace)
 (package! ace-window)
 (package! rainbow-delimiters)
 (package! osx-dictionary)
 (package! bing-dict)
 (package! easy-hugo)
 (package! ibuffer-vc)
+(package! wgrep)
