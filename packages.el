@@ -52,5 +52,10 @@
 
 (package! color-theme-sanityinc-tomorrow)
 (package! cnfonts)
-(package! terraform-mode)
-(package! company-terraform)
+(package! whitespace)
+(package! ace-window)
+(package! rainbow-delimiters)
+(package! osx-dictionary)
+(package! bing-dict)
+(package! easy-hugo)
+(package! ibuffer-vc)

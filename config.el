@@ -255,6 +255,17 @@
 ;;         ("http" . "127.0.0.1:6152")
 ;;         ("https" . "127.0.0.1:6152")))
 
+(use-package! uniquify
+  :config
+  (setq uniquify-buffer-name-style 'post-forward)
+  (setq uniquify-separator ":")
+)
+
+(use-package! whitespace
+  :config
+  (setq whitespace-style '(trailing tabs))
+  (global-whitespace-mode)
+)
 
 ;;
 ;; ivy swiper
@@ -330,7 +341,101 @@
          ("C-." . avy-pop-mark))
   )
 
-(use-package! company-terraform
+;; magit
+(use-package! magit
   :config
-  (company-terraform-init)
+  (global-set-key (kbd "C-x g") 'magit-status)
+  )
+
+(use-package! ace-window
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  ;; (setq aw-ignore-current t)
+  (global-set-key (kbd "C-M-h") #'ace-window)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t
+       (:height 10.0 :foreground "gold")
+       ))
+     ))
+  )
+
+
+(use-package! rainbow-delimiters
+    :config
+    (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+    )
+
+
+  (use-package! ibuffer
+    ;; :ensure ibuffer-vc
+    :config
+    (add-hook 'ibuffer-hook
+      (lambda ()
+
+        (face-remap-add-relative 'default 'font-lock-comment-face)
+        (copy-face 'font-lock-keyword-face 'tempface )
+        (setq ibuffer-filter-group-name-face 'tempface)
+        (face-remap-add-relative ibuffer-filter-group-name-face font-lock-doc-face)
+        (ibuffer-vc-set-filter-groups-by-vc-root)
+        (unless (eq ibuffer-sorting-mode 'alphabetic)
+          (ibuffer-do-sort-by-alphabetic))))
+
+    (defconst gcs-ibuffer-fontification-alist
+      '((ruby-mode . font-lock-string-face)
+        (sh-mode . font-lock-string-face)
+        (objc-mode . font-lock-constant-face)
+        (c-mode . font-lock-constant-face)
+        (java-mode . font-lock-constant-face)
+        (emacs-lisp-mode . font-lock-variable-name-face)
+        (org-mode . font-lock-negation-char-face)
+        (dired-mode . font-lock-function-name-face)
+        (term-mode . font-lock-doc-string-face)
+        (python-mode . font-lock-variable-name-face)))
+
+    (setq ibuffer-fontification-alist
+          `(,@(mapcar (lambda (b)
+                        `(9999 (eq major-mode ',(car b)) ,(cdr b)))
+                      gcs-ibuffer-fontification-alist)
+            (90 (string-match "magit" (symbol-name major-mode))
+                font-lock-function-name-face)
+            (90 (or (string-match "^*" (buffer-name))
+                    (memq major-mode ibuffer-help-buffer-modes))
+                font-lock-comment-face)))
+
+    (setq ibuffer-formats
+        '((mark modified read-only vc-status-mini " "
+                (name 18 18 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide)
+                " "
+                (vc-status 16 16 :left)
+                " "
+                filename-and-process)))
+    ;; (define-key ibuffer-mode-map (kbd "C-g") 'quit-window)
+    ;; (define-key ibuffer-mode-map (kbd "j") 'ibuffer-forward-line)
+    ;; (define-key ibuffer-mode-map (kbd "k") 'ibuffer-backward-line)
+    ;; (define-key ibuffer-mode-map (kbd "C-n") 'ibuffer-forward-filter-group)
+    ;; (define-key ibuffer-mode-map (kbd "C-p") 'ibuffer-backward-filter-group)
+    :bind ("C-x C-b" . ibuffer))
+
+
+(use-package! osx-dictionary
+  :bind ("C-c d" . osx-dictionary-search-pointer)
+  )
+
+(use-package! bing-dict
+  :bind ("C-c k" . bing-dict-brief)
+  )
+
+(use-package! easy-hugo
+  :init
+  (setq easy-hugo-basedir "~/blog/")
+  (setq easy-hugo-url "https://wdicc.com")
+  (setq easy-hugo-postdir "content/post")
+  (setq easy-hugo-previewtime "300")
+  (setq easy-hugo-default-ext ".org")
+  :bind ("C-c C-e" . easy-hugo)
   )
