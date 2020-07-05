@@ -50,7 +50,6 @@
 ;(unpin! t)
 
 (package! exec-path-from-shell)
-(package! ace-window)
 (package! rainbow-delimiters)
 (package! osx-dictionary)
 (package! bing-dict)

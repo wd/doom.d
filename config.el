@@ -100,10 +100,6 @@
   (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
 )
 
-;; 和x公用剪贴板
-(setq x-select-enable-clipboard t)
-;; (setq x-select-enable-primary t)
-
 ;;'y' for 'yes', 'n' for 'no'
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -238,3 +234,5 @@
 
 (after! lsp-python-ms
   (set-lsp-priority! 'mspyls 1))
+
+(add-hook! 'magit-mode-hook (setq hl-line-mode -1))
