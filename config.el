@@ -65,6 +65,11 @@
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("~/bin/") ))
 (setq default-directory "~/")
+(use-package! exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+  )
 
 ;;
 ;; set window size
