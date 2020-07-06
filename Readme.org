@@ -1,0 +1,3 @@
+* Description
+
+My emacs config, based on [[https://github.com/hlissner/doom-emacs][doom-emacs]]. Use =doom-sync= to install.
