@@ -159,6 +159,7 @@
 (prefer-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+(setq confirm-kill-emacs nil)
 
 (setq recentf-max-saved-items 200)
 
@@ -210,13 +211,12 @@
       "C-." 'avy-pop-mark
       "C-x g" 'magit-status
       "C-M-h" 'ace-window
-      "M-X" '+ivy/switch-buffer
+      "M-X" 'counsel-projectile-find-file
       "C-t" 'set-mark-command
       "C-x f" 'find-file-at-point
       "C-a" 'back-to-indentation-or-beginning
       "C-c a i" 'counsel-projectile-ag
-      "C-c a f" 'counsel-projectile-find-file
-      "C-c a v" 'counsel-imenu
+      "C-C a v" 'counsel-imenu
       "C-s" 'swiper-isearch
 
       :map swiper-map
