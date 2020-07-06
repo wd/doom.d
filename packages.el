@@ -56,3 +56,4 @@
 (package! easy-hugo)
 (package! ibuffer-vc)
 (package! wgrep)
+(package! easy-kill)

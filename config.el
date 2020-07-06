@@ -202,8 +202,54 @@
   (setq easy-hugo-default-ext ".org")
   )
 
+;;
+;; company
+;;
+;; (after! python-mode
+;;   (set-company-backend! 'python-mode
+;;     'company-lsp 'company-keywords 'company-yasnippet))
+
+(after! lsp-python-ms
+  (set-lsp-priority! 'mspyls 1))
+
+(add-hook! 'magit-mode-hook (setq hl-line-mode -1))
+
+(after! vterm
+  (setq vterm-max-scrollback 100000)
+  (set-popup-rule! "^vterm" :size 0.5 :side 'bottom :modeline t
+    :select t :quit nil :ttl 0)
+  (remove-hook! 'vterm-mode-hook
+    'hide-mode-line-mode t
+    )
+  )
+
+(defun wd-show-vterm-copy-mode ()
+  (if vterm-copy-mode
+      (propertize "COPY"
+                  'font-lock-face
+                  '(:foreground "green"
+                    :weight "bold"
+                    ))
+    "")
+  )
+
+(after! doom-modeline
+  (add-to-list 'global-mode-string '(:eval (wd-show-vterm-copy-mode)))
+  )
+
+;; (add-hook! 'doom-escape-hook
+;;   (if vterm-copy-mode
+;;       (vterm-copy-mode-done nil)
+;;     ))
+
+(after! org
+  (setq org-hide-leading-stars nil
+        org-startup-indented nil)
+  (remove-hook 'org-mode-hook #'org-superstar-mode))
+
+
 ;; keybindings
-(map! "C-c C-f" 'easy-hugo
+(map! "C-c h" 'easy-hugo
       "C-c b" 'bing-dict-brief
       "C-c d" 'osx-dictionary-search-pointer
       "C-c C-b" 'ibuffer
@@ -218,21 +264,10 @@
       "C-c a i" 'counsel-projectile-ag
       "C-C a v" 'counsel-imenu
       "C-s" 'swiper-isearch
+      [remap kill-ring-save] 'easy-kill
 
       :map swiper-map
       "M-q" 'swiper-query-replace
       "C-w" 'my-ivy-yank-word
       "C-'" 'swiper-avy
   )
-
-;;
-;; company
-;;
-;; (after! python-mode
-;;   (set-company-backend! 'python-mode
-;;     'company-lsp 'company-keywords 'company-yasnippet))
-
-(after! lsp-python-ms
-  (set-lsp-priority! 'mspyls 1))
-
-(add-hook! 'magit-mode-hook (setq hl-line-mode -1))
