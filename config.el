@@ -125,8 +125,7 @@
 
 ;;设置缺省模式是text，而不是基本模式
 (setq default-major-mode 'text-mode)
-;; (setq fill-column 80)
-;; (setq-default fill-column 80)
+
 ;; (setq longlines-show-hard-newlines t)
 ;; (setq longlines-auto-wrap t)
 ;; (add-hook 'text-mode-hook 'longlines-mode)
@@ -215,7 +214,9 @@
 (add-hook! 'magit-mode-hook (setq hl-line-mode -1))
 
 (after! vterm
-  (setq vterm-max-scrollback 100000)
+  (setq vterm-max-scrollback 100000
+        vterm-buffer-name-string "Term: %s"
+        )
   (set-popup-rule! "^vterm" :size 0.5 :side 'bottom :modeline t
     :select t :quit nil :ttl 0)
   (remove-hook! 'vterm-mode-hook
@@ -246,6 +247,15 @@
   (setq org-hide-leading-stars nil
         org-startup-indented nil)
   (remove-hook 'org-mode-hook #'org-superstar-mode))
+
+
+(after! counsel
+  (setq ivy-use-selectable-prompt t)
+  )
+
+(setq-default fill-column 120)
+(add-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
+           #'display-fill-column-indicator-mode)
 
 
 ;; keybindings
