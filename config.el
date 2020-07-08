@@ -257,6 +257,10 @@
 (add-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
            #'display-fill-column-indicator-mode)
 
+(defun counsel-ff-as-root ()
+  (interactive)
+  (ivy-exit-with-action #'counsel-find-file-as-root))
+
 
 ;; keybindings
 (map! "C-c h" 'easy-hugo
@@ -280,4 +284,7 @@
       "M-q" 'swiper-query-replace
       "C-w" 'my-ivy-yank-word
       "C-'" 'swiper-avy
+
+      :map counsel-find-file-map
+      "M-r" 'counsel-ff-as-root
   )
