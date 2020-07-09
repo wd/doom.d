@@ -57,3 +57,6 @@
 (package! ibuffer-vc)
 (package! wgrep)
 (package! easy-kill)
+(package! valign
+  :recipe (:host github :repo "casouri/valign"
+           :files ("*.el")))

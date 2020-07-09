@@ -262,6 +262,13 @@
   (ivy-exit-with-action #'counsel-find-file-as-root))
 
 
+(use-package! valign
+  :config
+  (add-hook! '(org-mode-hook markdown-mode-hook)
+             #'valign-mode)
+  )
+
+
 ;; keybindings
 (map! "C-c h" 'easy-hugo
       "C-c b" 'bing-dict-brief
