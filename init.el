@@ -26,13 +26,13 @@
 
        :ui
        ;;deft              ; notational velocity for Emacs
-       doom              ; what makes DOOM look the way it does
+       ;;doom              ; what makes DOOM look the way it does
        ;;doom-dashboard    ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
        ;;fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       ;;hydra
-       ;;indent-guides     ; highlighted indent columns
+       hydra
+       indent-guides     ; highlighted indent columns
        ;;minimap           ; show a map of the code on the side
        modeline          ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash         ; blink cursor line after big motions
@@ -52,7 +52,7 @@
        :editor
        ;;(evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
-       fold              ; (nigh) universal code folding
+       ;;fold              ; (nigh) universal code folding
        ;;(format +onsave)  ; automated prettiness
        ;;god               ; run Emacs commands without modifier keys
        ;;lispy             ; vim for lisp, for people who don't like vim
@@ -127,7 +127,7 @@
        ;;(haskell +dante)  ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
-       ;;json              ; At least it ain't XML
+       json              ; At least it ain't XML
        ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
        ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
@@ -177,7 +177,8 @@
 
        :config
        ;;literate
-       (default +bindings +smartparens))
+       (default +bindings +smartparens)
+       )
 
 (use-package-hook! ivy
   :post-config
@@ -189,3 +190,14 @@
         ivy-wrap nil
         )
   t)
+
+;; (use-package-hook! vterm
+;;   :post-config
+;;   ;; (setq vterm-shell "/usr/local/bin/tmux new-session -A -s emacs")
+;;   ;; (setq vterm-shell "env INSIDE_EMACS=vterm /usr/local/bin/fish")
+;;   )
+
+;; (use-package-hook! vterm
+;;   :pre-config
+;;   (setq! vterm-keymap-exceptions (remove "C-c" vterm-keymap-exceptions))
+;;   t)

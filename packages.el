@@ -57,6 +57,18 @@
 (package! ibuffer-vc)
 (package! wgrep)
 (package! easy-kill)
-(package! valign
-  :recipe (:host github :repo "casouri/valign"
+;; (package! valign
+;;   :recipe (:host github :repo "casouri/valign"
+;;            :files ("*.el")))
+;;(package! multi-vterm)
+(package! jsonnet-mode
+  :recipe (:host github :repo "mgyucht/jsonnet-mode"
            :files ("*.el")))
+
+(package! ayu-theme
+  :recipe (:host github :repo "vutran1710/Ayu-Theme-Emacs"
+           :files ("*.el")))
+
+;; (package! srcery-theme)
+(package! lab-themes)
+(package! flucui-themes)

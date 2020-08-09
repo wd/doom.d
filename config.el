@@ -26,11 +26,32 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 
-(setq doom-theme 'doom-gruvbox)
-(setq doom-font (font-spec :family "Source code pro" :size 12)
-      doom-variable-pitch-font (font-spec :family "Source code pro")
+;; (setq doom-theme 'doom-gruvbox)
+;; (use-package! ayu-theme
+;;   :config (load-theme 'ayu-grey t))
+;; (use-package! lab-themes
+;;   :config
+;;   (load-theme 'lab-dark t))
+
+(use-package! flucui-themes
+  :config
+  (load-theme 'flucui-dark t))
+;; (use-package! srcery-theme
+;;   :config
+;;   (load-theme 'srcery t)
+;;   )
+
+(setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12)
+      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font Mono")
       doom-unicode-font (font-spec :family "PingFang SC")
-      doom-big-font (font-spec :family "Source code pro" :size 19))
+      doom-big-font (font-spec :family "FiraCode Nerd Font Mono" :size 19))
+
+(after! diff-mode
+  (set-face-background 'diff-refine-changed nil)
+  (set-face-background 'diff-refine-added nil)
+  )
+
+;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -79,7 +100,8 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (wd-halfscreen)
+  (toggle-frame-fullscreen)
+  ;;(wd-halfscreen)
 )
 
 ;;
@@ -120,8 +142,9 @@
 
 ;;下面的这个设置可以让光标指到某个括号的时候显示与它匹配的括号
 (show-paren-mode t)
-;; (setq show-paren-style 'parentheses)
-(setq show-paren-style 'expression)
+(setq show-paren-style 'parentheses)
+;; (setq show-paren-style 'expression)
+;; (setq show-paren-style 'mixed)
 
 ;;设置缺省模式是text，而不是基本模式
 (setq default-major-mode 'text-mode)
@@ -161,6 +184,7 @@
 (setq confirm-kill-emacs nil)
 
 (setq recentf-max-saved-items 200)
+(global-visual-line-mode 1)
 
 ;; proxy
 ;;(setq url-proxy-services
@@ -207,41 +231,52 @@
 ;; (after! python-mode
 ;;   (set-company-backend! 'python-mode
 ;;     'company-lsp 'company-keywords 'company-yasnippet))
+(after! terraform-mode
+  (set-company-backend! 'terraform-mode
+    'company-terraform 'company-files 'company-keywords)
+  )
+
+(set-company-backend! '(text-mode
+                        markdown-mode
+                        org-mode)
+  '(:seperate company-ispell
+              company-files
+              company-yasnippet
+              company-dabbrev))
+
+(set-company-backend! '(emacs-lisp-mode)
+    '(company-capf company-yasnippet company-files company-dabbrev)
+    )
+
+(set-company-backend! '(jsonnet-mode)
+  '(:seperate company-files company-dabbrev)
+    )
 
 (after! lsp-python-ms
   (set-lsp-priority! 'mspyls 1))
 
 (add-hook! 'magit-mode-hook (setq hl-line-mode -1))
 
-(after! vterm
+;; (use-package! multi-vterm
+;; 	:config
+;; 	(setq vterm-keymap-exceptions nil)
+;;   (define-key! 'insert vterm-mode-map (kbd "C-c")      #'vterm--self-insert)
+;;   )
+
+(use-package! vterm
+  :config
   (setq vterm-max-scrollback 100000
-        vterm-buffer-name-string "Term: %s"
+        ;; vterm-buffer-name-string "term: %s"
         )
   (set-popup-rule! "^vterm" :size 0.5 :side 'bottom :modeline t
     :select t :quit nil :ttl 0)
-  (remove-hook! 'vterm-mode-hook
-    'hide-mode-line-mode t
-    )
-  )
 
-(defun wd-show-vterm-copy-mode ()
-  (if vterm-copy-mode
-      (propertize "COPY"
-                  'font-lock-face
-                  '(:foreground "green"
-                    :weight "bold"
-                    ))
-    "")
-  )
+  (remove-hook! 'vterm-mode-hook 'hide-mode-line-mode t))
+  ;; (add-hook! 'vterm-mode-hook #'toggle-truncate-lines))
 
 (after! doom-modeline
   (add-to-list 'global-mode-string '(:eval (wd-show-vterm-copy-mode)))
   )
-
-;; (add-hook! 'doom-escape-hook
-;;   (if vterm-copy-mode
-;;       (vterm-copy-mode-done nil)
-;;     ))
 
 (after! org
   (setq org-hide-leading-stars nil
@@ -249,27 +284,31 @@
   (remove-hook 'org-mode-hook #'org-superstar-mode))
 
 
-(after! counsel
-  (setq ivy-use-selectable-prompt t)
+(after! ivy
+  (setq ivy-use-selectable-prompt t
+        ivy-magic-slash-non-match-action 'ivy-magic-slash-non-match-cd-selected)
   )
 
 (setq-default fill-column 120)
 (add-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
            #'display-fill-column-indicator-mode)
 
-(defun counsel-ff-as-root ()
-  (interactive)
-  (ivy-exit-with-action #'counsel-find-file-as-root))
+;; disable hl-line-mode
+(remove-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
+           #'hl-line-mode)
 
 
-(use-package! valign
-  :config
-  (add-hook! '(org-mode-hook markdown-mode-hook)
-             #'valign-mode)
+;; disable spell check for string/text in terraform
+(add-hook! 'terraform-mode-hook
+  (setq flyspell-prog-text-faces '(font-lock-comment-face font-lock-doc-face))
   )
 
+(after! flyspell
+  (setq flyspell-duplicate-distance 0)
+  )
 
 ;; keybindings
+(global-set-key [remap mark-sexp] 'easy-mark)
 (map! "C-c h" 'easy-hugo
       "C-c b" 'bing-dict-brief
       "C-c d" 'osx-dictionary-search-pointer
@@ -284,8 +323,11 @@
       "C-a" 'back-to-indentation-or-beginning
       "C-c a i" 'counsel-projectile-ag
       "C-C a v" 'counsel-imenu
+      "C-C a g" 'counsel-ag
       "C-s" 'swiper-isearch
+      "C-e" 'end-of-line
       [remap kill-ring-save] 'easy-kill
+      "C-M-m" '+vterm/toggle
 
       :map swiper-map
       "M-q" 'swiper-query-replace
@@ -294,4 +336,22 @@
 
       :map counsel-find-file-map
       "M-r" 'counsel-ff-as-root
-  )
+
+      :map vterm-mode-map
+      "` [" 'vterm-copy-mode
+      ;; "C-c" 'vterm-send-C-c
+
+      :map flyspell-mode-map
+      "C-M-j" 'flyspell-correct-at-point
+      )
+
+;; (add-hook! vterm-mode-hook
+;;   (lambda ()
+;;     ;(which-key-mode -1)
+;;     (projectile-mode -1)
+;;     ))
+
+
+;; (map! :after vterm
+;;       :map vterm-mode-map
+;;       "C-c" #'vterm-send-C-c)

@@ -51,5 +51,18 @@
       (back-to-indentation)
     (move-beginning-of-line arg)))
 
+(defun counsel-ff-as-root ()
+  (interactive)
+  (ivy-exit-with-action #'counsel-find-file-as-root))
+
+(defun wd-show-vterm-copy-mode ()
+  (if vterm-copy-mode
+      (propertize
+       "COPY"
+       'font-lock-face
+       '(:foreground "green"
+         :weight "bold"
+         ))
+    ""))
 
 (provide 'my-fuctions)
