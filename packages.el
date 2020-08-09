@@ -72,3 +72,4 @@
 ;; (package! srcery-theme)
 (package! lab-themes)
 (package! flucui-themes)
+(package! ace-window)

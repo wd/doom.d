@@ -59,7 +59,7 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -104,18 +104,7 @@
   ;;(wd-halfscreen)
 )
 
-;;
-;; misc settings
-;; 
-(mouse-wheel-mode 1)
-;; 不弹出图形界面的确认窗口
-(setq use-dialog-box nil)
-
-(global-auto-revert-mode 1)
-
-;;
 ;; for mac only
-;; 
 (when (eq system-type 'darwin) ;; mac specific settings
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'meta)
@@ -125,37 +114,6 @@
 ;;'y' for 'yes', 'n' for 'no'
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;;禁用启动信息
-(setq inhibit-startup-message t)
-(setq initial-scratch-message "")
-;; 显示列号
-(setq column-number-mode t) 
-
-;; 语法高亮
-(global-font-lock-mode t)
-
-;;光标靠近鼠标的时候，让鼠标自动让开，别挡住视线
-(mouse-avoidance-mode 'animate)
-
-;; 翻页后再回来的时候，光标到原来的位置
-(setq scroll-preserve-screen-position t)
-
-;;下面的这个设置可以让光标指到某个括号的时候显示与它匹配的括号
-(show-paren-mode t)
-(setq show-paren-style 'parentheses)
-;; (setq show-paren-style 'expression)
-;; (setq show-paren-style 'mixed)
-
-;;设置缺省模式是text，而不是基本模式
-(setq default-major-mode 'text-mode)
-
-;; (setq longlines-show-hard-newlines t)
-;; (setq longlines-auto-wrap t)
-;; (add-hook 'text-mode-hook 'longlines-mode)
-;; (add-hook 'text-mode-hook 'turn-on-auto-fill)
-
-;; 打开文件的时候定位到上次的位置
-(save-place-mode 1)
 
 ;; 所有的备份文件转移到~/backups目录下
 (setq auto-save-default nil)
@@ -166,15 +124,7 @@
 (setq kept-new-versions 5)
 (setq delete-old-versions t)
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-;; Emacs 中，改变文件时，默认都会产生备份文件(以 ~ 结尾的文件)。可以完全去掉
-;; (并不可取)，也可以制定备份的方式。这里采用的是，把所有的文件备份都放在一
-;; 个固定的地方("~/var/tmp")。对于每个备份文件，保留最原始的两个版本和最新的
-;; 五个版本。并且备份的时候，备份文件是复本，而不是原件。
 
-;;不产生备份文件
-;(setq make-backup-files nil)
-
-;;设置kill-ring-max(我不知道怎么翻译这个词：)为200，以防不测：）
 (setq kill-ring-max 200)
 
 ;; Make Emacs UTF-8 compatible for both display and editing:
@@ -183,7 +133,7 @@
 (set-keyboard-coding-system 'utf-8)
 (setq confirm-kill-emacs nil)
 
-(setq recentf-max-saved-items 200)
+(setq recentf-max-saved-items 100)
 (global-visual-line-mode 1)
 
 ;; proxy
@@ -228,9 +178,6 @@
 ;;
 ;; company
 ;;
-;; (after! python-mode
-;;   (set-company-backend! 'python-mode
-;;     'company-lsp 'company-keywords 'company-yasnippet))
 (after! terraform-mode
   (set-company-backend! 'terraform-mode
     'company-terraform 'company-files 'company-keywords)
@@ -290,8 +237,6 @@
   )
 
 (setq-default fill-column 120)
-(add-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
-           #'display-fill-column-indicator-mode)
 
 ;; disable hl-line-mode
 (remove-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
