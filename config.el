@@ -27,8 +27,6 @@
 ;; `load-theme' function. This is the default:
 
 ;; (setq doom-theme 'doom-gruvbox)
-;; (use-package! ayu-theme
-;;   :config (load-theme 'ayu-grey t))
 ;; (use-package! lab-themes
 ;;   :config
 ;;   (load-theme 'lab-dark t))
@@ -36,10 +34,6 @@
 (use-package! flucui-themes
   :config
   (load-theme 'flucui-dark t))
-;; (use-package! srcery-theme
-;;   :config
-;;   (load-theme 'srcery t)
-;;   )
 
 (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12)
       doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font Mono")
