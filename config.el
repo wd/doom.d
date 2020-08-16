@@ -27,13 +27,13 @@
 ;; `load-theme' function. This is the default:
 
 ;; (setq doom-theme 'doom-gruvbox)
-;; (use-package! lab-themes
-;;   :config
-;;   (load-theme 'lab-dark t))
-
-(use-package! flucui-themes
+(use-package! lab-themes
   :config
-  (load-theme 'flucui-dark t))
+  (load-theme 'lab-dark t))
+
+;; (use-package! flucui-themes
+;;   :config
+;;   (load-theme 'flucui-dark t))
 
 (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12)
       doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font Mono")
@@ -43,6 +43,7 @@
 (after! diff-mode
   (set-face-background 'diff-refine-changed nil)
   (set-face-background 'diff-refine-added nil)
+  (set-face-background 'diff-refine-removed nil)
   )
 
 ;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
@@ -91,6 +92,11 @@
 ;;
 
 (when (window-system)
+  (use-package! beacon-mode
+    :config
+    (beacon-mode 1)
+  )
+
   (toggle-frame-fullscreen)
   ;;(wd-halfscreen)
 )
@@ -243,24 +249,75 @@
   (setq flyspell-duplicate-distance 0)
   )
 
+;; ivy fly
+(add-hook 'minibuffer-setup-hook #'mcfly-time-travel)
+(add-hook 'minibuffer-exit-hook
+          (lambda ()
+            (remove-hook 'pre-command-hook 'mcfly-back-to-present t)))
+
+;; jsonnet
+(add-hook! 'jsonnet-mode-hook
+          (setq comment-start "//"))
+
+
+(use-package! zoom-window
+  :config
+  (setq  zoom-window-mode-line-color "DarkGreen")
+  )
+
+(defhydra wd/hydra ()
+  ;; window
+  ("j" windmove-down "down" :column "window")
+  ("k" windmove-up "up")
+
+  ("h" windmove-left "left")
+  ("l" windmove-right "right")
+
+  ("z" zoom-window-zoom "zoom")
+
+  ;; project
+  ("a" counsel-ag "ag" :column "project")
+  ("C-a" (lambda () (interactive)
+                  (setq current-prefix-arg '(4))
+                  (call-interactively 'counsel-ag))
+   "ag current dir" :column "project")
+  ("g" magit-status "git" :exit t)
+  ("v" counsel-imenu "imenu")
+
+  ;; edit
+  ("J" (lambda() (interactive)(delete-indentation 1)) "join line" :column "edit")
+  ("j" goto-line "Goto line" :exit t)
+
+  ;; misc
+  ("d" osx-dictionary-search-pointer "osx dict" :column "misc")
+  ("b" bing-dict-brief "bing dict")
+
+  ("h" easy-hugo "hugo" :exit t)
+
+  ("q" nil "quit" :column nil)
+  )
+
+(use-package! key-chord
+  :config
+  (key-chord-mode 1)
+  (key-chord-define-global "df" 'kill-whole-line)
+  (key-chord-define-global "jj" 'ace-window)
+  (key-chord-define-global "jk" 'avy-goto-line)
+  (key-chord-define-global "mm" 'wd/hydra/body)
+ )
+
 ;; keybindings
 (global-set-key [remap mark-sexp] 'easy-mark)
-(map! "C-c h" 'easy-hugo
-      "C-c b" 'bing-dict-brief
-      "C-c d" 'osx-dictionary-search-pointer
-      "C-c C-b" 'ibuffer
-      "M-s" 'avy-goto-char-timer
+(map! "M-s" 'avy-goto-char-timer
       "C-." 'avy-pop-mark
-      "C-x g" 'magit-status
-      "C-M-h" 'ace-window
+
       "M-X" 'counsel-projectile-find-file
       "C-t" 'set-mark-command
       "C-x f" 'find-file-at-point
       "C-a" 'back-to-indentation-or-beginning
-      "C-c a i" 'counsel-projectile-ag
-      "C-C a v" 'counsel-imenu
-      "C-C a g" 'counsel-ag
+
       "C-s" 'swiper-isearch
+      "C-r" 'counsel-grep-or-swiper
       "C-e" 'end-of-line
       [remap kill-ring-save] 'easy-kill
       "C-M-m" '+vterm/toggle

@@ -65,4 +65,58 @@
          ))
     ""))
 
+;; copy from https://with-emacs.com/posts/ui-hacks/execute-commands-like-marty-mcfly/
+(defvar mcfly-commands
+  '(query-replace-regexp
+    flush-lines keep-lines ivy-read
+    swiper swiper-backward swiper-all
+    swiper-isearch swiper-isearch-backward
+    lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol
+    counsel-grep-or-swiper counsel-grep-or-swiper-backward
+    counsel-grep counsel-ack counsel-ag
+    ))
+
+(defvar mcfly-back-commands
+  '(self-insert-command
+    ivy-yank-char
+    ivy-yank-word
+    ivy-yank-symbol))
+
+(defun mcfly-back-to-present ()
+  (remove-hook 'pre-command-hook 'mcfly-back-to-present t)
+  (cond ((and (memq last-command mcfly-commands)
+              (equal (this-command-keys-vector) (kbd "M-p")))
+         ;; repeat one time to get straight to the first history item
+         (setq unread-command-events
+               (append unread-command-events
+                       (listify-key-sequence (kbd "M-p")))))
+        ((memq this-command mcfly-back-commands)
+         (delete-region (point)
+                        (point-max)))))
+
+(defun mcfly-time-travel ()
+  (when (memq this-command mcfly-commands)
+    (let* ((kbd (kbd "M-n"))
+           (cmd (key-binding kbd))
+           (future (and cmd
+                        (with-temp-buffer
+                          (when (ignore-errors
+                                  (call-interactively cmd) t)
+                            (buffer-string))))))
+      (when future
+        (save-excursion
+          (insert (propertize
+                   (replace-regexp-in-string
+                    "\\\\_<" ""
+                    (replace-regexp-in-string
+                     "\\\\_>" ""
+                     future))
+                   'face 'shadow)))
+        (add-hook 'pre-command-hook 'mcfly-back-to-present nil t)))))
+
+(defun wd/join-line ()
+  (interactive)
+  (delete-indentation 1)
+  )
+
 (provide 'my-fuctions)

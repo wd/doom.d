@@ -49,6 +49,8 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
+(disable-packages! which-key)
+
 (package! exec-path-from-shell)
 (package! rainbow-delimiters)
 (package! osx-dictionary)
@@ -67,3 +69,10 @@
 ;; (package! auto-dark-emacs
 ;;   :recipe (:host github :repo "LionyxML/auto-dark-emacs"
 ;;            :files ("*.el")))
+
+(package! zoom-window)
+(package! key-chord)
+
+(package! beacon-mode
+  :recipe (:host github :repo "Malabarba/beacon"
+           :files ("*.el")))
