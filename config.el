@@ -31,6 +31,10 @@
   :config
   (load-theme 'lab-dark t))
 
+;; (use-package! solo-jazz-theme
+;;   :config
+;;   (load-theme 'solo-jazz t)
+;; )
 ;; (use-package! flucui-themes
 ;;   :config
 ;;   (load-theme 'flucui-dark t))
@@ -92,7 +96,7 @@
 ;;
 
 (when (window-system)
-  (use-package! beacon-mode
+  (use-package! beacon
     :config
     (beacon-mode 1)
   )
@@ -276,13 +280,14 @@
   ("z" zoom-window-zoom "zoom")
 
   ;; project
-  ("a" counsel-ag "ag" :column "project")
+  ("a" counsel-ag "ag" :column "project" :exit t)
   ("C-a" (lambda () (interactive)
                   (setq current-prefix-arg '(4))
                   (call-interactively 'counsel-ag))
-   "ag current dir" :column "project")
+   "ag current dir" :column "project" :exit t)
   ("g" magit-status "git" :exit t)
-  ("v" counsel-imenu "imenu")
+  ("f" +ivy/projectile-find-file "find file" :exit t)
+  ("v" counsel-imenu "imenu" :exit t)
 
   ;; edit
   ("J" (lambda() (interactive)(delete-indentation 1)) "join line" :column "edit")
@@ -303,7 +308,7 @@
   (key-chord-define-global "df" 'kill-whole-line)
   (key-chord-define-global "jj" 'ace-window)
   (key-chord-define-global "jk" 'avy-goto-line)
-  (key-chord-define-global "mm" 'wd/hydra/body)
+  (key-chord-define-global "kk" 'wd/hydra/body)
  )
 
 ;; keybindings
@@ -313,7 +318,8 @@
 
       "M-X" 'counsel-projectile-find-file
       "C-t" 'set-mark-command
-      "C-x f" 'find-file-at-point
+      "C-x f" 'ffap
+      "C-x 4 f" 'ffap-other-window
       "C-a" 'back-to-indentation-or-beginning
 
       "C-s" 'swiper-isearch
@@ -340,8 +346,10 @@
 
 ;; (add-hook! vterm-mode-hook
 ;;   (lambda ()
-;;     ;(which-key-mode -1)
+;;     (which-key-mode -1)
 ;;     (projectile-mode -1)
+;;     (flyspell-mode-off)
+;;     (flycheck-mode -1)
 ;;     ))
 
 

@@ -49,7 +49,7 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-(disable-packages! which-key)
+;; (disable-packages! which-key)
 
 (package! exec-path-from-shell)
 (package! rainbow-delimiters)
@@ -75,4 +75,7 @@
 
 (package! beacon-mode
   :recipe (:host github :repo "Malabarba/beacon"
+           :files ("*.el")))
+(package! solo-jazz
+  :recipe (:host github :repo "cstby/solo-jazz-emacs-theme"
            :files ("*.el")))
