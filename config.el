@@ -1,171 +1,177 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
 (setq user-full-name "wd"
       user-mail-address "wd@wdicc.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-
-;; (setq doom-theme 'doom-gruvbox)
-(use-package! lab-themes
-  :config
-  (load-theme 'lab-dark t))
-
-;; (use-package! solo-jazz-theme
-;;   :config
-;;   (load-theme 'solo-jazz t)
-;; )
-;; (use-package! flucui-themes
-;;   :config
-;;   (load-theme 'flucui-dark t))
 
 (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12)
       doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font Mono")
       doom-unicode-font (font-spec :family "PingFang SC")
       doom-big-font (font-spec :family "FiraCode Nerd Font Mono" :size 19))
 
-(after! diff-mode
-  (set-face-background 'diff-refine-changed nil)
-  (set-face-background 'diff-refine-added nil)
-  (set-face-background 'diff-refine-removed nil)
-  )
+;; (setq doom-theme 'doom-one)
+(add-hook 'ns-system-appearance-change-functions
+          #'(lambda (appearance)
+              (mapc #'disable-theme custom-enabled-themes)
+              (pcase appearance
+                ('light (load-theme 'modus-operandi t))
+                ('dark (load-theme 'modus-vivendi t)))))
 
-;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq org-directory "~/org")
 (setq display-line-numbers-type nil)
 
-;; Here are some additional functions/macros that could help you configure Doom:
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
 
-(load! "my-functions.el")
+;; UI settings
+(toggle-frame-maximized)
 
-;;
-;; set path
-;;
-(setq exec-path (append exec-path '("/usr/local/bin")))
-(setq exec-path (append exec-path '("~/bin/") ))
-(setq default-directory "~/")
-(use-package! exec-path-from-shell
-  :config
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
-  )
+(setq initial-scratch-message
+      ";; wd's Emacs
 
-;;
-;; set window size
-;;
+")
 
-(when (window-system)
-  (use-package! beacon
-    :config
-    (beacon-mode 1)
-  )
-
-  (toggle-frame-fullscreen)
-  ;;(wd-halfscreen)
-)
-
-;; for mac only
+(setq-default fill-column 120)
 (when (eq system-type 'darwin) ;; mac specific settings
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'meta)
   (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
 )
 
-;;'y' for 'yes', 'n' for 'no'
-(fset 'yes-or-no-p 'y-or-n-p)
-
-
-;; 所有的备份文件转移到~/backups目录下
-(setq auto-save-default nil)
-(setq make-backup-files t)
-(setq backup-by-copying t)
-(setq version-control t)
-(setq kept-old-versions 2)
-(setq kept-new-versions 5)
-(setq delete-old-versions t)
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-
-(setq kill-ring-max 200)
-
-;; Make Emacs UTF-8 compatible for both display and editing:
-(prefer-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
 (setq confirm-kill-emacs nil)
 
-(setq recentf-max-saved-items 100)
-(global-visual-line-mode 1)
-
-;; proxy
-;;(setq url-proxy-services
-;;       '(("no_proxy" . "^\\(127.0.0.1\\|localhost\\|10.*\\)")
-;;         ("http" . "127.0.0.1:6152")
-;;         ("https" . "127.0.0.1:6152")))
-
-(use-package! uniquify
+(use-package! centaur-tabs
+  :after doom-dashboard
   :config
-  (setq uniquify-buffer-name-style 'post-forward)
-  (setq uniquify-separator ":")
-)
-
-(use-package! ace-window
-  :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  ;; (setq aw-ignore-current t)
-  (custom-set-faces
-   '(aw-leading-char-face
-     ((t
-       (:height 10.0 :foreground "gold")
-       ))
-     ))
+  (setq centaur-tabs-set-close-button nil)
   )
 
+(use-package! nyan-mode
+  :config
+  (nyan-mode)
+  )
 
-(use-package! rainbow-delimiters
-    :config
-    (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+;; hydra
+(use-package! hydra
+  :bind ("C-M-k" . wd/hydra/body)
+  :config
+  (defun wd/set-cursor-color ()
+    (let ((cur-theme-mode (frame-parameter nil 'background-mode)))
+      (if (string= cur-theme-mode "dark")
+          (set-cursor-color "#ffffff")
+        (set-cursor-color "#000000")
+        )
+      )
     )
+
+  (fset 'export-org-subtree-to-html
+		(kmacro-lambda-form [?\C-c ?\C-e ?\C-b ?\C-s ?h ?o] 0 "%d"))
+
+  (defhydra wd/hydra
+	(:pre
+	 (set-cursor-color "red")
+	 :post
+	 (wd/set-cursor-color)
+	 :foreign-keys run)
+	;; window
+	("C-n" (other-window 1) "down" :column "window")
+	("C-p" (other-window -1) "up")
+
+	("C-r" winner-undo "undo")
+	("C-w" text-scale-adjust "text size")
+
+	("z" zoom-window-zoom "zoom")
+
+	;; project
+	("a" consult-ripgrep "rg" :column "project" :exit t)
+	("r" (funcall-interactively 'consult-ripgrep default-directory)
+	 "rg current dir" :column "project" :exit t)
+
+	("g" magit-status "git" :exit t)
+	("i" consult-imenu "imenu" :exit t)
+    ("l" wd/visit-file-url "Git link" :exit t)
+
+	;; edit
+	("J" (lambda() (interactive)(delete-indentation 1)) "join line" :column "edit")
+	("G" consult-goto-line "Goto line" :exit t)
+	;; ("j" avy-goto-char "Avy goto char" :exit t)
+	("D" kill-whole-line "Kill line")
+
+	;; misc
+	("d" osx-dictionary-search-pointer "osx dict" :column "misc" :exit t)
+	("b" bing-dict-brief "bing dict" :exit t)
+	("c" org-capture "Org capture" :exit t)
+	("e" export-org-subtree-to-html "Export substree" :exit t)
+
+	("h" easy-hugo "hugo" :exit t)
+
+	("q" nil "quit" :column nil)))
+
+
+(use-package! org
+  :custom
+  (org-export-backends '(ascii html md))
+  :bind (("C-c a" . org-agenda)
+         :map org-mode-map
+         ("C-x n s" . org-toggle-narrow-to-subtree))
+  :hook
+  ((org-archive . (lambda() (org-save-all-org-buffers)))
+   (org-mode . (lambda() (whitespace-mode -1)))
+   )
+  :config
+  (setq org-archive-location "archive.org::* From %s")
+  (setq org-directory "~/org/")
+  (setq org-default-notes-file "~/org/notes.org")
+  (setq org-agenda-files
+        '("~/org"))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "|" "DONE(d)" "CANCEL(c)")
+          (type "READ(r)" "BUG(b)" "RESEARCH(e)" "|" "DONE(d)")
+          ))
+
+  (setq org-capture-templates
+        `(("r" "Readings(todo)" entry
+           (file+headline "todo.org" "Readings")
+           ,(concat "* %^{Link} :reading:%^g\n"
+                    ":CAPTURED: %U\n:END:\n\n"
+                    "%i%?"))
+
+          ("t" "Tasks(todo)" entry
+           (file+headline "todo.org" "Tasks")
+           ,(concat "* TODO %^{Title} %^g\n"
+                    "SCHEDULED: %^t\n"
+                    ":PROPERTIES:\n:CAPTURED: %U\n:END:\n\n"
+                    "%i%?"))
+
+          ("n" "Thoughts(notes)" entry
+           (file+headline "notes.org" "Thoughts")
+           ,(concat "* %^{Title} %^g\n"
+                    ":PROPERTIES:\n:CAPTURED: %U\n:END:\n\n"
+                    "%i%?"))
+
+          ("j" "Daily report"
+           item (file+olp+datetree "~/org/daily.org")
+           "%?"
+           :jump-to-captured 1
+           :tree-type week
+           ))
+  )
+)
+
+
+(use-package! deft
+  :config
+  (setq deft-extensions '("md" "org"))
+  (setq deft-directory "~/org")
+  (setq deft-recursive t)
+  (setq deft-use-filename-as-title nil)
+  (setq deft-use-filter-string-for-filename t)
+  (setq deft-file-naming-rules
+        '(;; (noslash . "-")
+          (nospace . "-")
+          (case-fn . downcase)))
+
+  (setq deft-default-extension "org")
+  (setq deft-text-mode 'org-mode)
+  (setq deft-auto-save-interval 0)
+  )
 
 (use-package! easy-hugo
   :init
@@ -176,60 +182,40 @@
   (setq easy-hugo-default-ext ".org")
   )
 
-;;
 ;; company
-;;
 (after! terraform-mode
   (set-company-backend! 'terraform-mode
-    'company-terraform 'company-files 'company-keywords)
-  )
+    '(:seperate company-terraform company-files company-capf company-keywords company-dabbrev))
+ )
 
 (set-company-backend! '(text-mode
-                        markdown-mode
                         org-mode)
   '(:seperate company-ispell
-              company-files
-              company-yasnippet
-              company-dabbrev))
+    company-files
+    company-yasnippet
+    company-dabbrev))
 
-(set-company-backend! '(emacs-lisp-mode)
-    '(company-capf company-yasnippet company-files company-dabbrev)
-    )
-
-(set-company-backend! '(jsonnet-mode)
-  '(:seperate company-files company-dabbrev)
-    )
-
-(after! lsp-python-ms
-  (set-lsp-priority! 'mspyls 1))
-
-(add-hook! 'magit-mode-hook (setq hl-line-mode -1))
-
-;; (use-package! multi-vterm
-;; 	:config
-;; 	(setq vterm-keymap-exceptions nil)
-;;   (define-key! 'insert vterm-mode-map (kbd "C-c")      #'vterm--self-insert)
-;;   )
-
-(use-package! vterm
-  :config
-  (setq vterm-max-scrollback 100000
-        ;; vterm-buffer-name-string "term: %s"
-        )
-  (set-popup-rule! "^vterm" :size 0.5 :side 'bottom :modeline t
-    :select t :quit nil :ttl 0)
-
-  (remove-hook! 'vterm-mode-hook 'hide-mode-line-mode t))
-  ;; (add-hook! 'vterm-mode-hook #'toggle-truncate-lines))
-
-(after! doom-modeline
-  (add-to-list 'global-mode-string '(:eval (wd-show-vterm-copy-mode)))
+(after! yaml-mode
+  (set-company-backend! 'yaml-mode
+    '(:seperate company-files
+      company-dabbrev))
   )
 
-(after! org
-  (setq org-hide-leading-stars nil
-        org-startup-indented nil)
-  (remove-hook 'org-mode-hook #'org-superstar-mode))
+(after! markdown-mode
+  (set-company-backend! 'markdown-mode
+    '(:seperate company-files
+      company-ispell
+      company-dabbrev))
+  )
+
+(after! emacs-lisp-mode
+  (set-company-backend! 'emacs-lisp-mode
+    '(:seperate company-files
+      company-keywords
+      company-yasnippet
+      company-capf
+      company-dabbrev))
+  )
 
 
 (after! ivy
@@ -237,122 +223,76 @@
         ivy-magic-slash-non-match-action 'ivy-magic-slash-non-match-cd-selected)
   )
 
-(setq-default fill-column 120)
-
-;; disable hl-line-mode
-(remove-hook! '(text-mode-hook prog-mode-hook conf-mode-hook)
-           #'hl-line-mode)
-
-
-;; disable spell check for string/text in terraform
-(add-hook! 'terraform-mode-hook
-  (setq flyspell-prog-text-faces '(font-lock-comment-face font-lock-doc-face))
+(use-package! flyspell
+  :hook
+  ;; disable spell check for string/text in terraform
+  (terraform-mode . (lambda ()
+                     (setq flyspell-prog-text-faces '(font-lock-comment-face font-lock-doc-face))))
   )
 
-(after! flyspell
-  (setq flyspell-duplicate-distance 0)
-  )
-
-;; ivy fly
-(add-hook 'minibuffer-setup-hook #'mcfly-time-travel)
-(add-hook 'minibuffer-exit-hook
-          (lambda ()
-            (remove-hook 'pre-command-hook 'mcfly-back-to-present t)))
-
-;; jsonnet
-(add-hook! 'jsonnet-mode-hook
-          (setq comment-start "//"))
-
-
-(use-package! zoom-window
+; magit
+(use-package! magit
   :config
-  (setq  zoom-window-mode-line-color "DarkGreen")
+  (defun wd/get-repo-name()
+    (replace-regexp-in-string
+              "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
+              (magit-get "remote"
+						 (magit-get-push-remote)
+						 "url"))
+    )
+
+  (defun wd/visit-pull-request-url ()
+	"Visit the current branch's PR on Github."
+	(interactive)
+	(browse-url
+	 (format "https://github.com/%s/pull/new/%s"
+			 (wd/get-repo-name)
+			 (magit-get-current-branch))))
   )
 
-(defhydra wd/hydra ()
-  ;; window
-  ("j" windmove-down "down" :column "window")
-  ("k" windmove-up "up")
-
-  ("h" windmove-left "left")
-  ("l" windmove-right "right")
-
-  ("z" zoom-window-zoom "zoom")
-
-  ;; project
-  ("a" counsel-ag "ag" :column "project" :exit t)
-  ("C-a" (lambda () (interactive)
-                  (setq current-prefix-arg '(4))
-                  (call-interactively 'counsel-ag))
-   "ag current dir" :column "project" :exit t)
-  ("g" magit-status "git" :exit t)
-  ("f" +ivy/projectile-find-file "find file" :exit t)
-  ("v" counsel-imenu "imenu" :exit t)
-
-  ;; edit
-  ("J" (lambda() (interactive)(delete-indentation 1)) "join line" :column "edit")
-  ("j" goto-line "Goto line" :exit t)
-
-  ;; misc
-  ("d" osx-dictionary-search-pointer "osx dict" :column "misc")
-  ("b" bing-dict-brief "bing dict")
-
-  ("h" easy-hugo "hugo" :exit t)
-
-  ("q" nil "quit" :column nil)
-  )
-
-(use-package! key-chord
-  :config
-  (key-chord-mode 1)
-  (key-chord-define-global "df" 'kill-whole-line)
-  (key-chord-define-global "jj" 'ace-window)
-  (key-chord-define-global "jk" 'avy-goto-line)
-  (key-chord-define-global "kk" 'wd/hydra/body)
- )
-
-;; keybindings
-(global-set-key [remap mark-sexp] 'easy-mark)
-(map! "M-s" 'avy-goto-char-timer
-      "C-." 'avy-pop-mark
-
-      "M-X" 'counsel-projectile-find-file
-      "C-t" 'set-mark-command
-      "C-x f" 'ffap
-      "C-x 4 f" 'ffap-other-window
-      "C-a" 'back-to-indentation-or-beginning
-
-      "C-s" 'swiper-isearch
-      "C-r" 'counsel-grep-or-swiper
-      "C-e" 'end-of-line
-      [remap kill-ring-save] 'easy-kill
-      "C-M-m" '+vterm/toggle
-
-      :map swiper-map
-      "M-q" 'swiper-query-replace
-      "C-w" 'my-ivy-yank-word
-      "C-'" 'swiper-avy
-
-      :map counsel-find-file-map
-      "M-r" 'counsel-ff-as-root
-
-      :map vterm-mode-map
-      "` [" 'vterm-copy-mode
-      ;; "C-c" 'vterm-send-C-c
-
-      :map flyspell-mode-map
-      "C-M-j" 'flyspell-correct-at-point
+(defun wd/switch-with-treemacs()
+  (interactive)
+  (require 'treemacs)
+  (if (not (eq (treemacs-current-visibility) `visible))
+      (+treemacs/toggle)
+    (if (eq (treemacs-get-local-window) (get-buffer-window))
+        (other-window -1)
+      (select-window (treemacs-get-local-window))
       )
+    )
+  )
 
-;; (add-hook! vterm-mode-hook
-;;   (lambda ()
-;;     (which-key-mode -1)
-;;     (projectile-mode -1)
-;;     (flyspell-mode-off)
-;;     (flycheck-mode -1)
-;;     ))
+;;
+;; keybindings
+;;
 
+(defun back-to-indentation-or-beginning (arg)
+  "combine two function into one call."
+  (interactive "^p")
+  (setq arg (or arg 1))
 
-;; (map! :after vterm
-;;       :map vterm-mode-map
-;;       "C-c" #'vterm-send-C-c)
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+
+(global-set-key "\C-a" 'back-to-indentation-or-beginning)
+(map! :niv "C-e" #'end-of-line)
+(map! :niv "C-h" #'centaur-tabs-backward)
+(map! :niv "C-l" #'centaur-tabs-forward)
+(map! :niv "M-o" #'centaur-tabs-counsel-switch-group)
+(map! :after vterm
+      :map vterm-mode-map
+      :ni "C-c" #'vterm-send-C-c
+      :ni "C-c" #'vterm-send-C-c)
+(map! :after magit
+      :map magit-mode-map
+      :n "gv" #'wd/visit-pull-request-url)
+(map! :niv "C-s" #'swiper)
+(map! :niv "M-w" #'kill-current-buffer)
+(global-set-key "\C-\M-j" 'wd/switch-with-treemacs)

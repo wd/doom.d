@@ -49,33 +49,6 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-;; (disable-packages! which-key)
-
-(package! exec-path-from-shell)
-(package! rainbow-delimiters)
-(package! osx-dictionary)
-(package! bing-dict)
+(package! nyan-mode)
 (package! easy-hugo)
-(package! ibuffer-vc)
-(package! wgrep)
-(package! easy-kill)
-(package! jsonnet-mode
-  :recipe (:host github :repo "mgyucht/jsonnet-mode"
-           :files ("*.el")))
-(package! lab-themes)
-(package! flucui-themes)
-(package! ace-window)
-
-;; (package! auto-dark-emacs
-;;   :recipe (:host github :repo "LionyxML/auto-dark-emacs"
-;;            :files ("*.el")))
-
-(package! zoom-window)
-(package! key-chord)
-
-(package! beacon-mode
-  :recipe (:host github :repo "Malabarba/beacon"
-           :files ("*.el")))
-(package! solo-jazz
-  :recipe (:host github :repo "cstby/solo-jazz-emacs-theme"
-           :files ("*.el")))
+(package! osx-dictionary)
