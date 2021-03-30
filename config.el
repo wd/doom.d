@@ -48,63 +48,6 @@
   (nyan-mode)
   )
 
-;; hydra
-(use-package! hydra
-  :bind ("C-M-k" . wd/hydra/body)
-  :config
-  (defun wd/set-cursor-color ()
-    (let ((cur-theme-mode (frame-parameter nil 'background-mode)))
-      (if (string= cur-theme-mode "dark")
-          (set-cursor-color "#ffffff")
-        (set-cursor-color "#000000")
-        )
-      )
-    )
-
-  (fset 'export-org-subtree-to-html
-		(kmacro-lambda-form [?\C-c ?\C-e ?\C-b ?\C-s ?h ?o] 0 "%d"))
-
-  (defhydra wd/hydra
-	(:pre
-	 (set-cursor-color "red")
-	 :post
-	 (wd/set-cursor-color)
-	 :foreign-keys run)
-	;; window
-	("C-n" (other-window 1) "down" :column "window")
-	("C-p" (other-window -1) "up")
-
-	("C-r" winner-undo "undo")
-	("C-w" text-scale-adjust "text size")
-
-	("z" zoom-window-zoom "zoom")
-
-	;; project
-	("a" consult-ripgrep "rg" :column "project" :exit t)
-	("r" (funcall-interactively 'consult-ripgrep default-directory)
-	 "rg current dir" :column "project" :exit t)
-
-	("g" magit-status "git" :exit t)
-	("i" consult-imenu "imenu" :exit t)
-    ("l" wd/visit-file-url "Git link" :exit t)
-
-	;; edit
-	("J" (lambda() (interactive)(delete-indentation 1)) "join line" :column "edit")
-	("G" consult-goto-line "Goto line" :exit t)
-	;; ("j" avy-goto-char "Avy goto char" :exit t)
-	("D" kill-whole-line "Kill line")
-
-	;; misc
-	("d" osx-dictionary-search-pointer "osx dict" :column "misc" :exit t)
-	("b" bing-dict-brief "bing dict" :exit t)
-	("c" org-capture "Org capture" :exit t)
-	("e" export-org-subtree-to-html "Export substree" :exit t)
-
-	("h" easy-hugo "hugo" :exit t)
-
-	("q" nil "quit" :column nil)))
-
-
 (use-package! org
   :custom
   (org-export-backends '(ascii html md))
@@ -296,3 +239,8 @@
 (map! :niv "C-s" #'swiper)
 (map! :niv "M-w" #'kill-current-buffer)
 (global-set-key "\C-\M-j" 'wd/switch-with-treemacs)
+
+;; for myself
+(map! :n "<SPC>ad" #'osx-dictionary-search-pointer)
+(map! :n "<SPC>ae" #'export-org-subtree-to-html)
+(map! :n "<SPC>ah" #'easy-hugo)
