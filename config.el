@@ -19,6 +19,12 @@
 (setq org-directory "~/org")
 (setq display-line-numbers-type nil)
 
+;; native-comp
+(setq comp-async-jobs-number 7
+    comp-deferred-compilation t
+    ;; comp-deferred-compilation-black-list '()
+    ;; or it will be too annoying
+    comp-async-report-warnings-errors nil)
 
 ;; UI settings
 (toggle-frame-maximized)
@@ -29,6 +35,8 @@
 ")
 
 (setq-default fill-column 120)
+(setq-default major-mode 'text-mode)
+
 (when (eq system-type 'darwin) ;; mac specific settings
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'meta)
@@ -37,10 +45,20 @@
 
 (setq confirm-kill-emacs nil)
 
+(use-package! uniquify
+  :config
+  (setq uniquify-buffer-name-style 'forward)
+  (setq uniquify-separator "/")
+  (setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
+  (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+  )
+
+
 (use-package! centaur-tabs
-  :after doom-dashboard
   :config
   (setq centaur-tabs-set-close-button nil)
+  ;; (centaur-tabs-group-by-projectile-project)
+  (centaur-tabs-mode t)
   )
 
 (use-package! nyan-mode
@@ -96,7 +114,59 @@
            :tree-type week
            ))
   )
-)
+  )
+
+;; (use-package! org-super-agenda
+;;   :after org
+;;   :config
+;;   (org-super-agenda-mode +1)
+;;   (setq org-agenda-block-separator nil)
+;;   ;; (set-face-attribute 'org-agenda-structure nil :height 1.5)
+;;   (setq org-agenda-custom-commands
+;;         '(("h" "Agenda and tasks view"
+;;            ((agenda "" ((org-agenda-span 'day)
+;;                         (org-agenda-overriding-header "")
+;;                         (org-deadline-warning-days 0)
+;;                         ;; (org-deadline-past-days 0)
+;;                         (org-scheduled-warning-days 0)
+;;                         ;; (org-scheduled-past-days 0)
+;;                         (org-super-agenda-groups
+;;                          '((:name ">>> Today <<<\n"
+;;                                   :time-grid t
+;;                                   :date today
+;;                                   :todo "TODAY"
+;;                                   :scheduled today)
+;;                            (:name ">>> Overdue <<<\n"
+;;                                    :time-grid t
+;;                                    :scheduled past
+;;                                    :deadline past
+;;                                    )
+;;                            ))))
+
+;;             (agenda "" ((org-agenda-span 7)
+;;                         (org-agenda-start-day "+1d")
+;;                         (org-agenda-start-on-weekday nil)
+;;                         (org-agenda-overriding-header "\n>>> Next 7 days <<<\n")
+;;                         (org-super-agenda-groups
+;;                          '((:name ""
+;;                                   :time-grid t
+;;                                   :date t)
+;;                            ))))
+
+;;             (alltodo "" ((org-agenda-overriding-header "\n>>> Todos <<<\n")
+;;                         (org-super-agenda-groups
+;;                          '((:name ""
+;;                                   :and (:scheduled nil :deadline nil))
+;;                            (:discard (:anything t))
+;;                            ))))
+;;             (tags "reading" ((org-agenda-overriding-header "\n>>> Readings <<<\n")
+;;                          (org-super-agenda-groups
+;;                           '((:name ""
+;;                                    :and (:tag "reading" :not (:todo "DONE"))
+;;                                    :order 1)
+;;                             (:discard (:anything t))
+;;                             ))))))))
+;;   )
 
 
 (use-package! deft
@@ -160,6 +230,14 @@
       company-dabbrev))
   )
 
+(after! lua-mode
+  (set-company-backend! 'lua-mode
+    '(:seperate company-files
+      company-keywords
+      company-yasnippet
+      company-capf
+      company-dabbrev))
+  )
 
 (after! ivy
   (setq ivy-use-selectable-prompt t
@@ -180,19 +258,33 @@
     (replace-regexp-in-string
               "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
               (magit-get "remote"
-						 (magit-get-push-remote)
-						 "url"))
+                         (magit-get-push-remote)
+                                                 "url"))
     )
 
   (defun wd/visit-pull-request-url ()
-	"Visit the current branch's PR on Github."
-	(interactive)
-	(browse-url
-	 (format "https://github.com/%s/pull/new/%s"
-			 (wd/get-repo-name)
-			 (magit-get-current-branch))))
+    "Visit the current branch's PR on Github."
+    (interactive)
+    (browse-url
+     (format "https://github.com/%s/pull/new/%s"
+             (wd/get-repo-name)
+             (magit-get-current-branch))))
   )
 
+(use-package! evil
+  :after ivy
+  :config
+  (setq evil-vsplit-window-right t
+        evil-split-window-below t)
+
+  (defadvice! prompt-for-buffer (&rest _)
+    :after '(evil-window-split evil-window-vsplit)
+    (+ivy/switch-buffer))
+  )
+
+;;
+;; keybindings
+;;
 (defun wd/switch-with-treemacs()
   (interactive)
   (require 'treemacs)
@@ -204,10 +296,6 @@
       )
     )
   )
-
-;;
-;; keybindings
-;;
 
 (defun back-to-indentation-or-beginning (arg)
   "combine two function into one call."
@@ -238,9 +326,13 @@
       :n "gv" #'wd/visit-pull-request-url)
 (map! :niv "C-s" #'swiper)
 (map! :niv "M-w" #'kill-current-buffer)
+(map! :i "M-i" #'company-complete)
 (global-set-key "\C-\M-j" 'wd/switch-with-treemacs)
 
 ;; for myself
+(fset 'export-org-subtree-to-html
+      (kmacro-lambda-form [?\C-c ?\C-e ?\C-b ?\C-s ?h ?o] 0 "%d"))
 (map! :n "<SPC>ad" #'osx-dictionary-search-pointer)
-(map! :n "<SPC>ae" #'export-org-subtree-to-html)
+(map! :map org-mode-map
+      :n "<SPC>ae" #'export-org-subtree-to-html)
 (map! :n "<SPC>ah" #'easy-hugo)
