@@ -27,7 +27,7 @@
     comp-async-report-warnings-errors nil)
 
 ;; UI settings
-(toggle-frame-maximized)
+;;(toggle-frame-maximized)
 
 (setq initial-scratch-message
       ";; wd's Emacs
@@ -36,6 +36,7 @@
 
 (setq-default fill-column 120)
 (setq-default major-mode 'text-mode)
+(setq ispell-dictionary "en")
 
 (when (eq system-type 'darwin) ;; mac specific settings
   (setq mac-option-modifier 'meta)
@@ -53,12 +54,9 @@
   (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
   )
 
-
-(use-package! centaur-tabs
+(use-package! persp-mode
   :config
-  (setq centaur-tabs-set-close-button nil)
-  ;; (centaur-tabs-group-by-projectile-project)
-  (centaur-tabs-mode t)
+  (setq +workspaces-on-switch-project-behavior t)
   )
 
 (use-package! nyan-mode
@@ -255,7 +253,8 @@
 (use-package! magit
   :config
   (defun wd/get-repo-name()
-    (replace-regexp-in-string
+
+ (replace-regexp-in-string
               "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
               (magit-get "remote"
                          (magit-get-push-remote)
@@ -277,9 +276,19 @@
   (setq evil-vsplit-window-right t
         evil-split-window-below t)
 
-  (defadvice! prompt-for-buffer (&rest _)
-    :after '(evil-window-split evil-window-vsplit)
-    (+ivy/switch-buffer))
+(use-package! evil-snipe
+  :custom
+  (evil-snipe-spillover-scope 'buffer))
+
+  ;; (defadvice! prompt-for-buffer (&rest _)
+  ;;   :after '(evil-window-split evil-window-vsplit)
+  ;;   (+ivy/switch-buffer))
+  )
+
+(use-package! doom-modeline
+  :config
+  (setq doom-modeline-persp-name t)
+  (setq doom-modeline-display-default-persp-name t)
   )
 
 ;;
@@ -312,14 +321,32 @@
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
 
+
+(defun formatted-copy (head)
+  "Export region to HTML, and copy it to the clipboard."
+  (interactive)
+  (save-window-excursion
+    (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil t t t))
+           (html (with-current-buffer buf (buffer-string))))
+      (with-current-buffer buf
+        (shell-command-on-region
+         (point-min)
+         (point-max)
+         "htmlcopy"))
+      (kill-buffer buf))))
+
+(map! :map org-mode-map
+      :nv "<SPC>ae" #'formatted-copy)
+
 (global-set-key "\C-a" 'back-to-indentation-or-beginning)
 (map! :niv "C-e" #'end-of-line)
-(map! :niv "C-h" #'centaur-tabs-backward)
-(map! :niv "C-l" #'centaur-tabs-forward)
-(map! :niv "M-o" #'centaur-tabs-counsel-switch-group)
+(map! :niv "C-h" #'previous-buffer)
+(map! :niv "C-l" #'next-buffer)
+(map! :niv "M-o" #'+workspace/switch-to)
+(map! :niv "C-M-p" #'other-window)
+(map! :niv "C-M-n" (lambda! (other-window -1)))
 (map! :after vterm
       :map vterm-mode-map
-      :ni "C-c" #'vterm-send-C-c
       :ni "C-c" #'vterm-send-C-c)
 (map! :after magit
       :map magit-mode-map
@@ -329,10 +356,10 @@
 (map! :i "M-i" #'company-complete)
 (global-set-key "\C-\M-j" 'wd/switch-with-treemacs)
 
-;; for myself
+
 (fset 'export-org-subtree-to-html
       (kmacro-lambda-form [?\C-c ?\C-e ?\C-b ?\C-s ?h ?o] 0 "%d"))
 (map! :n "<SPC>ad" #'osx-dictionary-search-pointer)
-(map! :map org-mode-map
-      :n "<SPC>ae" #'export-org-subtree-to-html)
+;; (map! :map org-mode-map
+;;       :n "<SPC>ae" #'export-org-subtree-to-html)
 (map! :n "<SPC>ah" #'easy-hugo)
