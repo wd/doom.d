@@ -52,3 +52,18 @@
 (package! nyan-mode)
 (package! easy-hugo)
 (package! osx-dictionary)
+(package! org-super-agenda)
+
+(package! momdus-theme
+  :recipe (:host gitlab :repo "protesilaos/modus-themes"))
+
+;; workaround for https://github.com/doomemacs/doomemacs/issues/6280 to fix the tab issue
+;;(package! project :pin "125a1a8d15f998cd495ef6a6b981b1a0e201bd2f") ; Feb 23
+
+(package! solaire-mode :disable t)
+
+;;(package! evil-collection :pin "a63cb007bf15c3fd4c3322f29f85d18d5574f7ba")
+
+;; (package! fish-mode :pin "d04478c0aba018cb789d77d591bfe315cb25132ac3a3e00a7b560f2c9f46b3cb5c04")
+
+;; (package! lsp-grammarly)
